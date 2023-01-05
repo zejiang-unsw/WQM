@@ -2,16 +2,46 @@
 % Please edit documentation in R/utilities.R
 \name{fun_icwt}
 \alias{fun_icwt}
-\title{Function: Inverse of continuous wavelet transform}
+\title{Inverse of continuous wavelet transform}
 \usage{
-fun_icwt(x.wave, dt = 1, dj = 1/8, lowerPeriod = 2 * dt, scales = NULL)
+fun_icwt(x.wave, dt = 1, dj = 1/8)
 }
 \arguments{
-\item{x}{input complex matrix}
+\item{x.wave}{input complex matrix.}
+
+\item{dt}{sampling resolution in the time domain.}
+
+\item{dj}{sampling resolution in the frequency domain.}
 }
 \value{
 reconstruction time series
 }
 \description{
-Function: Inverse of continuous wavelet transform
+Inverse of continuous wavelet transform
+}
+\examples{
+set.seed(100)
+
+dt<-1
+dj<-1/8
+n <- 100
+x <- rnorm(n)
+x.wave <- t(WaveletComp::WaveletTransform(x=x)$Wave)
+rec <- fun_icwt(x.wave)
+
+x.wt <- WaveletComp::analyze.wavelet(data.frame(x=x),"x",dt=dt,dj=dj)
+rec_orig <- WaveletComp::reconstruct(x.wt,only.sig = FALSE, plot.rec = FALSE)$series$x.r
+
+### compare to original series
+op <- par(mfrow = c(1, 1), mar=c(3,3,1,1), mgp=c(1, 0.5, 0))
+plot(1:n, x, type="l", lwd=5, xlab=NA, ylab=NA)
+lines(1:n, rec, col="red",lwd=3)
+lines(1:n, rec_orig, col="blue", lwd=1)
+legend("topright",legend=c("Raw","Inverse","Inverse_orig"),
+       lwd=c(5,3,1),bg="transparent",bty = "n",
+       col=c("black","red","blue"),horiz=TRUE)
+par(op)
+}
+\references{
+fun_stoch_sim_wave in PRSim, Brunner and Furrer, 2020.
 }

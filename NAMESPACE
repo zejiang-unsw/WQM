@@ -2,5 +2,7 @@
 
 export(bc.cwt)
 export(bc_cwt)
+export(fun_cwt_J)
 export(fun_icwt)
+export(fun_ifft)
 export(prsim)

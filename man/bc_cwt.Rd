@@ -10,19 +10,18 @@ bc_cwt(
   variable,
   theta = 0.1,
   QM = c("MBC", "MRS", "QDM"),
-  PRand = TRUE,
-  marginal = "empirical",
   number_sim = 5,
   wavelet = "morlet",
   dt = 1,
-  dj = 1/8,
-  upperPeriod,
-  seed = NULL,
-  do.plot = FALSE
+  dj = 1,
+  J = 9,
+  PR.cal = FALSE,
+  do.plot = FALSE,
+  ...
 )
 }
 \arguments{
-\item{do.plot}{}
+\item{...}{}
 }
 \description{
 bc_cwt

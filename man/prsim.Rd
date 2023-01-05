@@ -4,7 +4,7 @@
 \alias{prsim}
 \title{Phase randomization}
 \usage{
-prsim(modulus, phases, dt = 1, dj = 1/8, variable = "prep", theta)
+prsim(modulus, phases.p, noise_mat, dt, dj, method = c("M1", "M2")[2])
 }
 \arguments{
 \item{theta}{}

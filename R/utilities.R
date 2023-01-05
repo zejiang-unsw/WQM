@@ -1,64 +1,79 @@
-#' Function: Inverse of continuous wavelet transform
+#' Inverse of continuous wavelet transform
 #'
-#' @param x input complex matrix
+#' @param x.wave input complex matrix.
+#' @param dt sampling resolution in the time domain.
+#' @param dj sampling resolution in the frequency domain.
 #'
-#' @return  reconstruction time series
+#' @return reconstruction time series
 #' @export
 #'
-#' @examples
+#' @references fun_stoch_sim_wave in PRSim, Brunner and Furrer, 2020.
 #'
-fun_icwt<-function(x.wave,dt=1,dj=1/8,lowerPeriod=2*dt,scales=NULL){
+#' @examples
+#' set.seed(100)
+#'
+#' dt<-1
+#' dj<-1/8
+#' n <- 100
+#' x <- rnorm(n)
+#' x.wave <- t(WaveletComp::WaveletTransform(x=x)$Wave)
+#' rec <- fun_icwt(x.wave)
+#'
+#' x.wt <- WaveletComp::analyze.wavelet(data.frame(x=x),"x",dt=dt,dj=dj)
+#' rec_orig <- WaveletComp::reconstruct(x.wt,only.sig = FALSE, plot.rec = FALSE)$series$x.r
+#'
+#' ### compare to original series
+#' op <- par(mfrow = c(1, 1), mar=c(3,3,1,1), mgp=c(1, 0.5, 0))
+#' plot(1:n, x, type="l", lwd=5, xlab=NA, ylab=NA)
+#' lines(1:n, rec, col="red",lwd=3)
+#' lines(1:n, rec_orig, col="blue", lwd=1)
+#' legend("topright",legend=c("Raw","Inverse","Inverse_orig"),
+#'        lwd=c(5,3,1),bg="transparent",bty = "n",
+#'        col=c("black","red","blue"),horiz=TRUE)
+#' par(op)
+fun_icwt<-function(x.wave, dt=1, dj=1/8){
 
-  #x.wave <- as.matrix(wt_o)
-  wt.r<-Re(x.wave)
+  # dt <- 1
+  # dj <- 1/8
+  n <- length(x.wave)
+
+  # extract real part of wavelet decomposition
+  wt.r <- Re(x.wave)/2 # for wavCWT
 
   ### define number of scales
-  J<-length(wt.r[1,])
-  # Reconstruct as in formula (11):
+  J <- length(wt.r[1,]) - 1
 
-  if(is.null(scales)) dial<-2*2^(0:J*dj) else dial<-scales
-  rec<-rep(NA,(length(wt.r[,1])))
+  # Reconstruct as in formula (11), refer to Torrence and Compo, 1998
+  dial <- 2*2^((0:J)*dj)
+  rec <- rep(NA,(length(wt.r[,1])))
   for(l in 1:(length(wt.r[,1]))){
-    rec[l]<-dj*sqrt(dt)/(pi^(-1/4)*0.776)*sum(wt.r[l,]/sqrt(dial)[1:length(wt.r[l,])]) #refer to Torrence and Compo, 1998
+    rec[l] <- dj*sqrt(dt)/(pi^(-1/4)*0.776)*sum(wt.r[l,]/sqrt(dial)[1:length(wt.r[l,])])
   }
 
-  if(is.null(scales)){
-    # Define central angular frequency omega0 and fourier factor:
-    omega0 = 6
-    #fourier.factor   = (4*pi)/(omega0 + sqrt(2+omega0^2))
-    fourier.factor = (2*pi)/omega0
+  return(rec)
 
-    # Compute scales and periods:
-    min.scale = lowerPeriod/fourier.factor             # Convert lowerPeriod to minimum scale
-    #max.scale = upperPeriod/fourier.factor             # Convert upperPeriod to maximum scale
-    #J = as.integer( log2(max.scale/min.scale) / dj)    # Index of maximum scale -1
-
-    scales = min.scale * 2^((0:J)*dj)        # sequence of scales
-    scales.length = length(scales)           # J + 1
-    periods = fourier.factor*scales          # sequence of periods
-
-  }
-
-  rec.waves = matrix(0, nrow=length(wt.r[1,]), ncol=length(wt.r[,1]))
-  #0.2144548: dj*sqrt(dt)/(pi^(-1/4)*0.776) when dj=0.125, dt=1
-  for (s.ind in seq_along(wt.r[1,])) {
-    rec.waves[s.ind,] = (Re(wt.r[,s.ind])/sqrt(scales[s.ind]))*dj*sqrt(dt)/(pi^(-1/4)*0.776)
-  }
-
-  # reconstructed time series
-  x.r  = colSums(rec.waves, na.rm=T)
-
-  #ts.plot(cbind(rec,x.r), col=1:2)
-  #cat(sum(abs(x.r-rec)))
-
-  return(x.r)
 }
 
-ifft <- function (x) fft(x, inverse = TRUE)/length(x)
+#------------------------------------------------------------------------------#
+#' Inverse Fourier transform
+#'
+#' @param x input time series.
+#' @param do.plot Logical value of plot.
+#'
+#' @return reconstruction time series
+#' @export
+#'
+#' @references fun_stoch_sim in PRSim, Brunner and Furrer, 2020.
+#'
+#' @examples
+#' x <- rnorm(100)
+#' x.new <- fun_ifft(x, do.plot=TRUE)
+fun_ifft<-function(x, do.plot=FALSE){
 
-fun_ifft<-function(x.fft){
+  ### compute fast Fourier transform
+  x.fft <- fft(x)
+  ts_inv <- fft(x.fft, inverse = TRUE)/length(x.fft)
 
-  #x.fft <- mat_new
   ### derive modulus of complex numbers (radius)
   modulus <- Mod(x.fft)
 
@@ -85,12 +100,45 @@ fun_ifft<-function(x.fft){
 
   ### this procedure reproduces the original time series
   ### apply the same transformation procedure for the newly generated complex numbers
-  ft_inv_new <- ifft(ft_new)
-  ts_invers_new <- Re(ft_inv_new)
+  ft_inv_new <- fft(ft_new, inverse = TRUE)/length(ft_new)
+  ts_inv_new <- Re(ft_inv_new)
 
-  # plot(data$des,type="l", lwd=2)
-  # lines(ts_invers_new,col=2)
-  # cat(sum(abs(data$des-ts_invers_new)))
+  if(do.plot){
+    ### compare to original series
+    op <- par(mfrow = c(1, 1), mar=c(3,3,1,1), mgp=c(1, 0.5, 0))
+    plot(1:n, ts_inv,type="l", lwd=5, xlab=NA, ylab=NA)
+    lines(1:n, ts_inv_new,col="red",lwd=3)
+    lines(1:n, x,col="blue", lwd=1)
+    legend("topright",legend=c("Inverse","Inverse_new", "Raw"),
+           lwd=c(5,3,1),bg="transparent",bty = "n",
+           col=c("black","red","blue"),horiz=TRUE)
+    par(op)
+  }
 
-  return(ts_invers_new)
+  return(ts_inv_new)
+}
+
+#' Function: Total number of decomposition levels
+#'
+#' @param n
+#' @param dt
+#' @param dj
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fun_cwt_J <- function(n, dt, dj){
+    upperPeriod <- floor(n*dt/3)
+    lowerPeriod <- 2*dt
+
+    omega0 = 6
+    fourier.factor = (2 * pi)/omega0
+
+    min.scale = lowerPeriod/fourier.factor
+    max.scale = upperPeriod/fourier.factor
+
+    J <- as.integer(log2(max.scale/min.scale)/dj)
+
+    return(J)
 }
