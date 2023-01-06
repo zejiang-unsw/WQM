@@ -4,7 +4,13 @@
 \alias{fun_icwt}
 \title{Inverse of continuous wavelet transform}
 \usage{
-fun_icwt(x.wave, dt = 1, dj = 1/8)
+fun_icwt(
+  x.wave,
+  dt = 1,
+  dj = 1/8,
+  flag.wav = c("WaveletComp", "wmtsa"),
+  scale = NULL
+)
 }
 \arguments{
 \item{x.wave}{input complex matrix.}
@@ -12,9 +18,13 @@ fun_icwt(x.wave, dt = 1, dj = 1/8)
 \item{dt}{sampling resolution in the time domain.}
 
 \item{dj}{sampling resolution in the frequency domain.}
+
+\item{flag.wav}{String for two different CWT packages.}
+
+\item{scale}{Wavelet scales.}
 }
 \value{
-reconstruction time series
+reconstructed time series
 }
 \description{
 Inverse of continuous wavelet transform

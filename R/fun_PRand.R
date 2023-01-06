@@ -26,6 +26,7 @@ prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2]){
 
       shuff <- ShuffleBlocks(1:nrow(phases), block=12)
       shuff <- shuff[!shuff>nrow(phases)]
+
       phases <- tmp.n[shuff,]
       modulus <- modulus[shuff,]
     }

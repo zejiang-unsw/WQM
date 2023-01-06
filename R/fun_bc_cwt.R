@@ -107,7 +107,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     } else if(QM=="QDM") {
       modulus.tmp <- lapply(1:ncol(modulus.o), function(i)
         QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,
-            n.tau=NULL,...))
+            n.tau=100,...))
       modulus.bcc <- sapply(modulus.tmp, function(ls) ls$mhat.c)
       modulus.bcf <- sapply(modulus.tmp, function(ls) ls$mhat.p)
     }
@@ -158,13 +158,11 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     ## bcc----
     mat_new_cal <- matrix(complex(modulus=modulus.bcc,argument=phases.m),ncol=ncol(phases.m))
     rec_cal <- fun_icwt(x=mat_new_cal,dt=dt,dj=dj, flag.wav, scale)
-
     if(variable=="prep") rec_cal[rec_cal<=theta] <- 0
 
     if(PR.cal) {
-      mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
-
       ### apply wavelet reconstruction to randomized signal
+      mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
       data_sim_cal <- sapply(1:number_sim, function(r) fun_icwt(x=mat_cal_r[[r]], dt=dt, dj=dj, flag.wav, scale))
       if(variable=="prep") data_sim_cal[data_sim_cal<=theta] <- 0
       colnames(data_sim_cal) <- paste0("r",seq(1:number_sim))
@@ -179,12 +177,10 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     ## bcf----
     mat_new_val <- matrix(complex(modulus=modulus.bcf,argument=phases.p),ncol=ncol(phases.p))
     rec_val <- fun_icwt(x=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
-
     if(variable=="prep") rec_val[rec_val<=theta] <- 0
 
-    mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
-
 	  ### apply wavelet reconstruction to randomized signal
+    mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
 	  data_sim_val <- sapply(1:number_sim, function(r) fun_icwt(x=mat_val_r[[r]], dt=dt, dj=dj, flag.wav, scale))
 	  if(variable=="prep") data_sim_val[data_sim_val<=theta] <- 0
     colnames(data_sim_val) <- paste0("r",seq(1:number_sim))
