@@ -3,8 +3,10 @@
 #' @param x.wave input complex matrix.
 #' @param dt sampling resolution in the time domain.
 #' @param dj sampling resolution in the frequency domain.
+#' @param flag.wav String for two different CWT packages.
+#' @param scale Wavelet scales.
 #'
-#' @return reconstruction time series
+#' @return reconstructed time series
 #' @export
 #'
 #' @references fun_stoch_sim_wave in PRSim, Brunner and Furrer, 2020.
@@ -31,24 +33,48 @@
 #'        lwd=c(5,3,1),bg="transparent",bty = "n",
 #'        col=c("black","red","blue"),horiz=TRUE)
 #' par(op)
-fun_icwt<-function(x.wave, dt=1, dj=1/8){
+fun_icwt<-function(x.wave, dt, dj, flag.wav=c("WaveletComp","wmtsa"), scale=NULL){
 
-  # dt <- 1
-  # dj <- 1/8
-  n <- length(x.wave)
+  dt <- 1
+  dj <- 1/8
+  n <- nrow(x.wave)
 
   # extract real part of wavelet decomposition
-  wt.r <- Re(x.wave)/2 # for wavCWT
+  wt.r <- Re(x.wave)
 
-  ### define number of scales
+  # define number of scales
   J <- length(wt.r[1,]) - 1
 
+  # calculate s0
+  if(flag.wav=="WaveletComp"){
+    lowerPeriod <- 2*dt
+    omega0 = 6
+    fourier.factor = (2 * pi)/omega0
+    min.scale = lowerPeriod/fourier.factor
+    dial <- min.scale*2^((0:J)*dj)
+  } else if(flag.wav=="wmtsa") {
+    dial <- 2*2^((0:J)*dj)
+    #if(!is.null(scale)) dial <- scale
+  }
+  #cat(dial)
+
   # Reconstruct as in formula (11), refer to Torrence and Compo, 1998
-  dial <- 2*2^((0:J)*dj)
   rec <- rep(NA,(length(wt.r[,1])))
   for(l in 1:(length(wt.r[,1]))){
     rec[l] <- dj*sqrt(dt)/(pi^(-1/4)*0.776)*sum(wt.r[l,]/sqrt(dial)[1:length(wt.r[l,])])
   }
+
+  # rec.waves <- matrix(0, nrow=length(wt.r[1,]), ncol=length(wt.r[,1]))
+  # #0.2144548: dj*sqrt(dt)/(pi^(-1/4)*0.776) when dj=0.125, dt=1
+  # for (s.ind in seq_along(wt.r[1,])) {
+  #   rec.waves[s.ind,] = (Re(wt.r[,s.ind])/sqrt(dial[s.ind]))*dj*sqrt(dt)/(pi^(-1/4)*0.776)
+  # }
+  #
+  # # reconstructed time series
+  # x.r  = colSums(rec.waves, na.rm=T)
+  #
+  # #ts.plot(cbind(rec,x.r), col=1:2)
+  # #cat(sum(abs(x.r-rec)))
 
   return(rec)
 
@@ -118,6 +144,7 @@ fun_ifft<-function(x, do.plot=FALSE){
   return(ts_inv_new)
 }
 
+#------------------------------------------------------------------------------#
 #' Function: Total number of decomposition levels
 #'
 #' @param n
@@ -129,7 +156,8 @@ fun_ifft<-function(x, do.plot=FALSE){
 #'
 #' @examples
 fun_cwt_J <- function(n, dt, dj){
-    upperPeriod <- floor(n*dt/3)
+    upperPeriod <- floor(n*dt/3) # used in WaveletComp
+    #upperPeriod <- floor(n*dt) # Torrence and Compo, 1998
     lowerPeriod <- 2*dt
 
     omega0 = 6
@@ -138,6 +166,7 @@ fun_cwt_J <- function(n, dt, dj){
     min.scale = lowerPeriod/fourier.factor
     max.scale = upperPeriod/fourier.factor
 
+    # Equation (10) in Torrence and Compo, 1998
     J <- as.integer(log2(max.scale/min.scale)/dj)
 
     return(J)
