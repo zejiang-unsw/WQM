@@ -18,8 +18,12 @@
 #'
 #' @examples
 bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
-                   number_sim=5, wavelet="morlet", dt=1, dj=1, J=9, PR.cal=FALSE, do.plot=FALSE,...)
+                   number_sim=5, wavelet="morlet", dt=1, dj=1,
+                   PR.cal=FALSE, do.plot=FALSE,...)
   {
+
+  flag.wav <- switch(1, "wmtsa", "WaveletComp")
+  if(flag.wav=="wmtsa") J <- fun_cwt_J(length(data[[1]]$obs[-subset]), dt, dj) + 1
   ###=================================###====================================###
   ## white noise ----
   # generation of white noise for random phases generation
@@ -29,8 +33,11 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     #data.obs <- as.vector(sapply(data, function(ls)ls$obs[subset]))
     #ts_wn <- sample(data.obs, size=length(data[[1]]$obs[subset]), replace=TRUE)
 
-    #wt_noise <- t(WaveletComp::WaveletTransform(x=ts_wn,dt=dt,dj=dj)$Wave)
-    wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+    if(flag.wav=="WaveletComp"){
+      wt_noise <- t(WaveletComp::WaveletTransform(x=ts_wn,dt=dt,dj=dj)$Wave)
+    } else if(flag.wav=="wmtsa"){
+      wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+    }
 
     noise_mat_cal[[r]] <- as.matrix(wt_noise)
   }
@@ -41,8 +48,12 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     #data.obs <- as.vector(sapply(data, function(ls)ls$obs[subset]))
     #ts_wn <- sample(data.obs, size=length(data[[1]]$obs[-subset]), replace=TRUE)
 
-    #wt_noise <- t(WaveletComp::WaveletTransform(x=ts_wn,dt=dt,dj=dj)$Wave)
-    wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+    if(flag.wav=="WaveletComp"){
+      wt_noise <- t(WaveletComp::WaveletTransform(x=ts_wn,dt=dt,dj=dj)$Wave)
+    } else if(flag.wav=="wmtsa"){
+      wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+    }
+
     noise_mat_val[[r]] <- as.matrix(wt_noise)
   }
 
@@ -54,14 +65,18 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
   for(l in 1:length(data)){ # run through all stations
     ## cwt decomposition ----
     # use continuous wavelet transform (CWT) to wavelet transform the data
-    if(T){
+    if(flag.wav=="wmtsa"){
       wt_o <- wmtsa::wavCWT(x=data[[l]]$obs[subset],wavelet=wavelet,n.scale=J)
       wt_m <- wmtsa::wavCWT(x=data[[l]]$mod[subset],wavelet=wavelet,n.scale=J)
       wt_p <- wmtsa::wavCWT(x=data[[l]]$mod[-subset],wavelet=wavelet,n.scale=J)
-    } else {
+
+      scale <- attr(wt_o,'scale')
+    } else if(flag.wav=="WaveletComp"){
       wt_o <- t(WaveletComp::WaveletTransform(x=data[[l]]$obs[subset],dt=dt,dj=dj)$Wave)
       wt_m <- t(WaveletComp::WaveletTransform(x=data[[l]]$mod[subset],dt=dt,dj=dj)$Wave)
       wt_p <- t(WaveletComp::WaveletTransform(x=data[[l]]$mod[-subset],dt=dt,dj=dj)$Wave)
+
+      scale <- NULL
     }
 
     # return CWT coefficients as a complex matrix with rows and columns
@@ -91,15 +106,16 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
       modulus.bcf <- modulus.tmp$mhat.p
     } else if(QM=="QDM") {
       modulus.tmp <- lapply(1:ncol(modulus.o), function(i)
-        QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,...))
+        QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,
+            n.tau=NULL,...))
       modulus.bcc <- sapply(modulus.tmp, function(ls) ls$mhat.c)
       modulus.bcf <- sapply(modulus.tmp, function(ls) ls$mhat.p)
     }
 
     if(do.plot){
       # calibration
-      summary(modulus.m) %>% print()
-      summary(modulus.bcc) %>% print()
+      #summary(modulus.m) %>% print()
+      #summary(modulus.bcc) %>% print()
       df.modulus <- rbind(data.frame(mod="obs",no=subset,x=modulus.o),
                           data.frame(mod="cal",no=subset,x=modulus.m),
                           data.frame(mod="bcc",no=subset,x=modulus.bcc)) %>%
@@ -116,8 +132,8 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
       #   facet_wrap(.~lev, nrow=3)
 
       # validation
-      summary(modulus.p) %>% print()
-      summary(modulus.bcf) %>% print()
+      #summary(modulus.p) %>% print()
+      #summary(modulus.bcf) %>% print()
 
       df.modulus <- rbind(data.frame(mod="val",no=1:nrow(modulus.p),x=modulus.p),
                           data.frame(mod="bcf",no=1:nrow(modulus.p),x=modulus.bcf)) %>%
@@ -141,17 +157,16 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     ###================================###===================================###
     ## bcc----
     mat_new_cal <- matrix(complex(modulus=modulus.bcc,argument=phases.m),ncol=ncol(phases.m))
-    rec_cal <- fun_icwt(x=mat_new_cal,dt=dt,dj=dj) #+ mean(data[[l]]$mod[subset])
-    #cat(mean(data[[l]]$mod[subset]), theta,'--cal--')
-    #theta <- mean(data[[l]]$mod[subset])
+    rec_cal <- fun_icwt(x=mat_new_cal,dt=dt,dj=dj, flag.wav, scale)
+
     if(variable=="prep") rec_cal[rec_cal<=theta] <- 0
 
     if(PR.cal) {
-      data_sim_cal <- sapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]],
-                                                             dt=dt,dj=dj))
-      #data_sim_cal <- data_sim_cal + mean(data[[l]]$mod[subset])
-      if(variable=="prep") data_sim_cal[data_sim_cal<=theta] <- 0
+      mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
 
+      ### apply wavelet reconstruction to randomized signal
+      data_sim_cal <- sapply(1:number_sim, function(r) fun_icwt(x=mat_cal_r[[r]], dt=dt, dj=dj, flag.wav, scale))
+      if(variable=="prep") data_sim_cal[data_sim_cal<=theta] <- 0
       colnames(data_sim_cal) <- paste0("r",seq(1:number_sim))
     } else{
       data_sim_cal <- data.frame(r=NA)
@@ -161,22 +176,19 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     data.cal$bcc <-  rec_cal
 
     ###================================###===================================###
-    ##  bcf----
+    ## bcf----
     mat_new_val <- matrix(complex(modulus=modulus.bcf,argument=phases.p),ncol=ncol(phases.p))
-    rec_val <- fun_icwt(x=mat_new_val,dt=dt,dj=dj) #+ mean(data[[l]]$mod[-subset])
-    #plot.ts(rec_val)
-    #cat(mean(data[[l]]$mod[-subset]), theta,'--val--')
-    #theta <- mean(data[[l]]$mod[-subset])
-    #rec_val[rec_val>theta] <- rec_val[rec_val>theta] + mean(data[[l]]$mod[-subset])
+    rec_val <- fun_icwt(x=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
+
     if(variable=="prep") rec_val[rec_val<=theta] <- 0
 
-	  data_sim_val <- sapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]],
-	                                                         dt=dt,dj=dj))
-	  #data_sim_val[data_sim_val>theta] <- data_sim_val[data_sim_val>theta] + mean(data[[l]]$mod[-subset])
-	  #data_sim_val <- data_sim_val + mean(data[[l]]$mod[-subset])
-	  if(variable=="prep") data_sim_val[data_sim_val<=theta] <- 0
+    mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
 
+	  ### apply wavelet reconstruction to randomized signal
+	  data_sim_val <- sapply(1:number_sim, function(r) fun_icwt(x=mat_val_r[[r]], dt=dt, dj=dj, flag.wav, scale))
+	  if(variable=="prep") data_sim_val[data_sim_val<=theta] <- 0
     colnames(data_sim_val) <- paste0("r",seq(1:number_sim))
+
     data.val <- data[[l]][-subset,]
     data.val$bcc <-  rec_val
 
