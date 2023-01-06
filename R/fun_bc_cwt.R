@@ -22,8 +22,9 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
                    PR.cal=FALSE, do.plot=FALSE,...)
   {
 
-  flag.wav <- switch(1, "wmtsa", "WaveletComp")
+  flag.wav <- switch(2, "wmtsa", "WaveletComp")
   if(flag.wav=="wmtsa") J <- fun_cwt_J(length(data[[1]]$obs[-subset]), dt, dj) + 1
+
   ###=================================###====================================###
   ## white noise ----
   # generation of white noise for random phases generation
@@ -106,8 +107,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
       modulus.bcf <- modulus.tmp$mhat.p
     } else if(QM=="QDM") {
       modulus.tmp <- lapply(1:ncol(modulus.o), function(i)
-        QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,
-            n.tau=100,...))
+        QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,...))
       modulus.bcc <- sapply(modulus.tmp, function(ls) ls$mhat.c)
       modulus.bcf <- sapply(modulus.tmp, function(ls) ls$mhat.p)
     }

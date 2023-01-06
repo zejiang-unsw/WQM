@@ -37,7 +37,6 @@ fun_icwt<-function(x.wave, dt, dj, flag.wav=c("WaveletComp","wmtsa"), scale=NULL
 
   dt <- 1
   dj <- 1/8
-  #n <- nrow(x.wave)
 
   # extract real part of wavelet decomposition
   wt.r <- Re(x.wave)
