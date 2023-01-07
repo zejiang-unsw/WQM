@@ -22,7 +22,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
                    PR.cal=FALSE, do.plot=FALSE,...)
   {
 
-  flag.wav <- switch(2, "wmtsa", "WaveletComp")
+  flag.wav <- switch(1, "wmtsa", "WaveletComp")
   if(flag.wav=="wmtsa") J <- fun_cwt_J(length(data[[1]]$obs[-subset]), dt, dj) + 1
 
   ###=================================###====================================###

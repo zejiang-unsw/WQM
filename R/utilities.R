@@ -36,7 +36,7 @@
 fun_icwt<-function(x.wave, dt, dj, flag.wav=c("WaveletComp","wmtsa"), scale=NULL){
 
   dt <- 1
-  dj <- 1/8
+  dj <- 1/4
 
   # extract real part of wavelet decomposition
   wt.r <- Re(x.wave)
@@ -53,7 +53,7 @@ fun_icwt<-function(x.wave, dt, dj, flag.wav=c("WaveletComp","wmtsa"), scale=NULL
     dial <- min.scale*2^((0:J)*dj)
   } else if(flag.wav=="wmtsa") {
     dial <- 2*2^((0:J)*dj)
-    #if(!is.null(scale)) dial <- scale
+    if(!is.null(scale)) dial <- scale
   }
   #cat(dial)
 
