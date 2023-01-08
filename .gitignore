@@ -50,7 +50,7 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 tests/
-inst/*
+inst/dump/
 MWR2022_v1/
 
 

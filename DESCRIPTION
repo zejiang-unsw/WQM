@@ -19,11 +19,16 @@ Description: A wavelet-based quantile mapping post-processing method (WQM). It c
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+Depends: 
+    R (>= 2.10)
 Imports: 
     MBC,
     wmtsa,
-    WaveletComp
+    WaveletComp,
+    splus2R (>= 1.2-0), 
+    ifultools (>= 2.0-0)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
+
