@@ -33,7 +33,7 @@
 #'        lwd=c(5,3,1),bg="transparent",bty = "n",
 #'        col=c("black","red","blue"),horiz=TRUE)
 #' par(op)
-fun_icwt<-function(x.wave, dt, dj, flag.wav=c("WaveletComp","wmtsa"), scale=NULL){
+fun_icwt<-function(x.wave, dt, dj, flag.wav=c("wmtsa","WaveletComp"), scale=NULL){
 
   dt <- 1
   dj <- 1/4
@@ -146,14 +146,13 @@ fun_ifft<-function(x, do.plot=FALSE){
 #------------------------------------------------------------------------------#
 #' Function: Total number of decomposition levels
 #'
-#' @param n
-#' @param dt
-#' @param dj
+#' @param n sample size.
+#' @param dt sampling resolution in the time domain.
+#' @param dj sampling resolution in the frequency domain.
 #'
-#' @return
+#' @return the total number of decomposition levels.
 #' @export
 #'
-#' @examples
 fun_cwt_J <- function(n, dt, dj){
     upperPeriod <- floor(n*dt/3) # used in WaveletComp
     #upperPeriod <- floor(n*dt) # Torrence and Compo, 1998

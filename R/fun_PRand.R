@@ -1,15 +1,13 @@
-#' Phase randomization
+#' Phase randomization and shuffling
 #'
-#' @param modulus
-#' @param phases
-#' @param noise_mat
-#' @param variable
-#' @param theta
+#' @param modulus  Modulus of complex values.
+#' @param phases  Argument of complex values.
+#' @param noise_mat Complex matrix from a random time series
+#' @param method Shuffling method, M1: non-shuffling and M2: shuffling. M2 by default.
 #'
-#' @return
+#' @return A new complex matrix
 #' @export
 #'
-#' @examples
 prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2]){
 
     ###===============================###===============================###
@@ -24,7 +22,7 @@ prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2]){
       tmp.n <- sapply(1:ncol(tmp), function(ii) {tmp[ord.bcf[,ii],ii] <- tmp.rank[,ii];
       return(tmp[,ii])})
 
-      shuff <- ShuffleBlocks(1:nrow(phases), block=12)
+      shuff <- ShuffleBlocks(1:nrow(phases), size=12)
       shuff <- shuff[!shuff>nrow(phases)]
 
       phases <- tmp.n[shuff,]
@@ -36,6 +34,8 @@ prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2]){
     return(mat_new)
 }
 
+# shifts (or rotates) the elements of the input vector in a cyclic fashion (end periodicity is used).
+# reference: wavethresh
 guyrot <- function(v, n){
     l <- length(v)
     n <- n %% l
@@ -47,14 +47,16 @@ guyrot <- function(v, n){
     v
 }
 
-ShuffleBlocks <- function(v, block = 6L) {
-  #block <- as.integer(block)
-  #stopifnot(length(v) %% block == 0L)
-  v <- 1: ((length(v) %/% block+1)*block)
+# shuffle within a block
+# reference https://stackoverflow.com/questions/68576845/shuffle-permutate-vector-block-wise
+ShuffleBlocks <- function(v, size = 6L) {
+  size <- as.integer(size)
+  #stopifnot(length(v) %% size == 0L)
+  v <- 1: ((length(v) %/% size+1)*size)
 
-  mat <- matrix(v, nrow = block)
+  mat <- matrix(v, nrow = size)
   #out <- as.vector(apply(mat, 2, sample)) # random sample within block
-  out <- as.vector(apply(mat, 2, function(x) guyrot(x,sample(1:block,1)))) #rotate within block
+  out <- as.vector(apply(mat, 2, function(x) guyrot(x,sample(-size:size,1)))) #rotate within block
   #out <- as.vector(mat[, sample(ncol(mat))]) # block shuffle
   #print(out)
   return(out)

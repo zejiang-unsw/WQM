@@ -7,7 +7,14 @@
 fun_cwt_J(n, dt, dj)
 }
 \arguments{
-\item{dj}{}
+\item{n}{sample size.}
+
+\item{dt}{sampling resolution in the time domain.}
+
+\item{dj}{sampling resolution in the frequency domain.}
+}
+\value{
+the total number of decomposition levels.
 }
 \description{
 Function: Total number of decomposition levels

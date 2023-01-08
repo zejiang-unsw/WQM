@@ -1,22 +1,21 @@
-#' bc_cwt
+#' CWT based quantile mapping
 #'
-#' @param data
-#' @param subset
-#' @param variable
-#' @param theta
-#' @param QM
-#' @param number_sim
-#' @param wavelet
-#' @param dt
-#' @param dj
-#' @param PR.cal
-#' @param do.plot
-#' @param ...
+#' @param data a list of input dataset
+#' @param subset a index of number denoting the subset for calibration
+#' @param variable a character string denoting the type of variable.
+#' @param theta threshold of rainfall.
+#' @param QM a character string denoting the qm method used.
+#' @param number_sim The total number of realizations.
+#' @param wavelet a character string denoting the wavelet filter to use in calculating the CWT.
+#' @param dt sampling resolution in the time domain.
+#' @param dj sampling resolution in the frequency domain.
+#' @param PR.cal Logical value for phase randomization of calibration.
+#' @param do.plot Logical value for ploting.
+#' @param ... Additional arguments for QDM.
 #'
-#' @return
+#' @return a list of post-processed data
 #' @export
 #'
-#' @examples
 bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
                    number_sim=5, wavelet="morlet", dt=1, dj=1,
                    PR.cal=FALSE, do.plot=FALSE,...)

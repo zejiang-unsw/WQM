@@ -2,13 +2,22 @@
 % Please edit documentation in R/fun_PRand.R
 \name{prsim}
 \alias{prsim}
-\title{Phase randomization}
+\title{Phase randomization and shuffling}
 \usage{
 prsim(modulus, phases, noise_mat, method = c("M1", "M2")[2])
 }
 \arguments{
-\item{theta}{}
+\item{modulus}{Modulus of complex values.}
+
+\item{phases}{Argument of complex values.}
+
+\item{noise_mat}{Complex matrix from a random time series}
+
+\item{method}{Shuffling method, M1: non-shuffling and M2: shuffling. M2 by default.}
+}
+\value{
+A new complex matrix
 }
 \description{
-Phase randomization
+Phase randomization and shuffling
 }

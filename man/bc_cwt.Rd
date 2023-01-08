@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_bc_cwt.R
 \name{bc_cwt}
 \alias{bc_cwt}
-\title{bc_cwt}
+\title{CWT based quantile mapping}
 \usage{
 bc_cwt(
   data,
@@ -20,8 +20,33 @@ bc_cwt(
 )
 }
 \arguments{
-\item{...}{}
+\item{data}{a list of input dataset}
+
+\item{subset}{a index of number denoting the subset for calibration}
+
+\item{variable}{a character string denoting the type of variable.}
+
+\item{theta}{threshold of rainfall.}
+
+\item{QM}{a character string denoting the qm method used.}
+
+\item{number_sim}{The total number of realizations.}
+
+\item{wavelet}{a character string denoting the wavelet filter to use in calculating the CWT.}
+
+\item{dt}{sampling resolution in the time domain.}
+
+\item{dj}{sampling resolution in the frequency domain.}
+
+\item{PR.cal}{Logical value for phase randomization of calibration.}
+
+\item{do.plot}{Logical value for ploting.}
+
+\item{...}{Additional arguments for QDM.}
+}
+\value{
+a list of post-processed data
 }
 \description{
-bc_cwt
+CWT based quantile mapping
 }

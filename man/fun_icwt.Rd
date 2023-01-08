@@ -4,13 +4,7 @@
 \alias{fun_icwt}
 \title{Inverse of continuous wavelet transform}
 \usage{
-fun_icwt(
-  x.wave,
-  dt = 1,
-  dj = 1/8,
-  flag.wav = c("WaveletComp", "wmtsa"),
-  scale = NULL
-)
+fun_icwt(x.wave, dt, dj, flag.wav = c("wmtsa", "WaveletComp"), scale = NULL)
 }
 \arguments{
 \item{x.wave}{input complex matrix.}
