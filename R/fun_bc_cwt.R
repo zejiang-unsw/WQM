@@ -161,7 +161,9 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
 
     if(PR.cal) {
       ### apply wavelet reconstruction to randomized signal
-      mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
+      #mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
+      mat_cal_r <- prsim(modulus.bcc, phases.m, noise_mat_cal)
+
       data_sim_cal <- sapply(1:number_sim, function(r) fun_icwt(x=mat_cal_r[[r]], dt=dt, dj=dj, flag.wav, scale))
       if(variable=="prep") data_sim_cal[data_sim_cal<=theta] <- 0
       colnames(data_sim_cal) <- paste0("r",seq(1:number_sim))
@@ -174,12 +176,21 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
 
     ###================================###===================================###
     ## bcf----
+    if(nrow(phases.p)<nrow(phases.o)) phases.o1 <- phases.o[1:nrow(phases.p), ]
+    else phases.o1 <- rbind(phases.o, phases.o)[1:nrow(phases.p), ]
+
+    shift <- sapply(1:ncol(phases.o1), function(j) which.min(phases.o1[,j]) - which.min(phases.p[,j]))
+    shift
+    phases.o1 <- sapply(1:ncol(phases.o1), function(j) guyrot(phases.o1[,j],-shift[j]))
+
     mat_new_val <- matrix(complex(modulus=modulus.bcf,argument=phases.p),ncol=ncol(phases.p))
     rec_val <- fun_icwt(x=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
     if(variable=="prep") rec_val[rec_val<=theta] <- 0
 
 	  ### apply wavelet reconstruction to randomized signal
-    mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
+    #mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
+    mat_val_r <- prsim(modulus.bcf, phases.p, noise_mat_val)
+
 	  data_sim_val <- sapply(1:number_sim, function(r) fun_icwt(x=mat_val_r[[r]], dt=dt, dj=dj, flag.wav, scale))
 	  if(variable=="prep") data_sim_val[data_sim_val<=theta] <- 0
     colnames(data_sim_val) <- paste0("r",seq(1:number_sim))
