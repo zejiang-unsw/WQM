@@ -4,16 +4,27 @@
 \alias{prsim}
 \title{Phase randomization and shuffling}
 \usage{
-prsim(modulus, phases, noise_mat, method = c("M1", "M2")[2])
+prsim(
+  modulus,
+  phases,
+  noise_mat,
+  method = c("M1", "M2")[2],
+  size = 3,
+  seed = NULL
+)
 }
 \arguments{
 \item{modulus}{Modulus of complex values.}
 
 \item{phases}{Argument of complex values.}
 
-\item{noise_mat}{Complex matrix from a random time series}
+\item{noise_mat}{Complex matrix from random time series.}
 
 \item{method}{Shuffling method, M1: non-shuffling and M2: shuffling. M2 by default.}
+
+\item{size}{Block size.}
+
+\item{seed}{Seed for shuffling process.}
 }
 \value{
 A new complex matrix

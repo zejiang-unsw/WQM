@@ -4,12 +4,13 @@
 #' @param phases  Argument of complex values.
 #' @param noise_mat Complex matrix from random time series.
 #' @param method Shuffling method, M1: non-shuffling and M2: shuffling. M2 by default.
+#' @param size Block size.
 #' @param seed Seed for shuffling process.
 #'
 #' @return A new complex matrix
 #' @export
 #'
-prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2], seed=100){
+prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2], size=3, seed=NULL){
 
     if(!is.null(seed)) set.seed(seed)
 
@@ -29,12 +30,11 @@ prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2], seed=100){
         tmp.n <- sapply(1:ncol(tmp), function(ii) {tmp[ord.bcf[,ii],ii] <- tmp.rank[,ii];
         return(tmp[,ii])})
 
-        shuff <- ShuffleBlocks(1:nrow(phases), size=6)
+        shuff <- ShuffleBlocks(1:nrow(phases), size)
         shuff <- shuff[!shuff>nrow(phases)]
 
         phases <- tmp.n[shuff,]
         modulus <- modulus[shuff,]
-        #if(r==1|r==2) cat('r',r,":",shuff,'-------')
       }
 
       mat_new[[r]] <- matrix(complex(modulus=modulus,argument=phases),ncol=ncol(phases))
@@ -61,14 +61,14 @@ guyrot <- function(v, n){
 
 # shuffle within a block
 # reference https://stackoverflow.com/questions/68576845/shuffle-permutate-vector-block-wise
-ShuffleBlocks <- function(v, size = 6L) {
+ShuffleBlocks <- function(v, size) {
   size <- as.integer(size)
   #stopifnot(length(v) %% size == 0L)
   v <- 1: ((length(v) %/% size+1)*size)
 
   mat <- matrix(v, nrow = size)
-  out <- as.vector(apply(mat, 2, sample)) # random sample within block
-  #out <- as.vector(apply(mat, 2, function(x) guyrot(x,sample(1:size,1)))) #rotate within block
+  #out <- as.vector(apply(mat, 2, sample)) # random sample within block
+  out <- as.vector(apply(mat, 2, function(x) guyrot(x,sample(1:size,1)))) #rotate within block
   #out <- as.vector(mat[, sample(ncol(mat))]) # block shuffle
   #print(out)
   return(out)
