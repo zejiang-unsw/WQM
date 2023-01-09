@@ -1,5 +1,3 @@
-MWR2022/*
-
 # History files
 .Rhistory
 .Rapp.history
@@ -51,7 +49,4 @@ po/*~
 rsconnect/
 tests/
 inst/dump/
-MWR2022_v1/
-
-
-WQM.Rproj
+*.Rproj
