@@ -49,4 +49,6 @@ po/*~
 rsconnect/
 tests/
 inst/dump/
+MWR2022/
 *.Rproj
+.DS_Store
