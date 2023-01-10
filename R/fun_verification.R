@@ -10,7 +10,11 @@
 #'
 RankHist <- function (forecasts, observations, do.plot=FALSE)
 {
-  rank <- apply(cbind(observations, forecasts), 1, function(x) rank(x, ties = "random")[1])
+  # rank <- apply(cbind(observations, forecasts), 1, function(x) rank(x, ties = "random",
+  #                                                                   na.last = FALSE)[1])
+  mat <- as.matrix(cbind(observations, forecasts))
+  rank <- matrixStats::rowRanks(mat, ties="random")[,1]
+
   k <- ncol(forecasts)
   if(do.plot){
     hist(rank, breaks = 0:(k + 1), prob = TRUE, xaxt = "n",

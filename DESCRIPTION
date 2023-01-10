@@ -25,6 +25,7 @@ Imports:
     MBC,
     wmtsa,
     WaveletComp,
+    matrixStats,
     splus2R (>= 1.2-0), 
     ifultools (>= 2.0-0)
 Suggests: 
