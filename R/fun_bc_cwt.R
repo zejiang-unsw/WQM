@@ -176,13 +176,6 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
 
     ###================================###===================================###
     ## bcf----
-    if(nrow(phases.p)<nrow(phases.o)) phases.o1 <- phases.o[1:nrow(phases.p), ]
-    else phases.o1 <- rbind(phases.o, phases.o)[1:nrow(phases.p), ]
-
-    shift <- sapply(1:ncol(phases.o1), function(j) which.min(phases.o1[,j]) - which.min(phases.p[,j]))
-    shift
-    phases.o1 <- sapply(1:ncol(phases.o1), function(j) guyrot(phases.o1[,j],-shift[j]))
-
     mat_new_val <- matrix(complex(modulus=modulus.bcf,argument=phases.p),ncol=ncol(phases.p))
     rec_val <- fun_icwt(x=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
     if(variable=="prep") rec_val[rec_val<=theta] <- 0
