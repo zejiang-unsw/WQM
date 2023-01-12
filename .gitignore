@@ -50,5 +50,7 @@ rsconnect/
 tests/
 inst/dump/
 MWR2022/
+data-raw/
 *.Rproj
 .DS_Store
+MWR2022.zip
