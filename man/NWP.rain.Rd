@@ -5,7 +5,7 @@
 \alias{NWP.rain}
 \title{Australia NWP rainfall forecasts at lead 1h over Sydney region}
 \usage{
-data(NWP.rain.h)
+data(NWP.rain)
 }
 \description{
 A dataset containing 160 stations including observation and raw forecasts.

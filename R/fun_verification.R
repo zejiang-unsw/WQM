@@ -2,6 +2,7 @@
 #'
 #' @param forecasts A matrix of ensemble forecasts, in which the rows corresponds to locations and times and the columns correspond to the individual ensemble members.
 #' @param observations A vector of observations corresponding to the locations and times of the forecasts.
+#' @param do.plot Logical value of plot.
 #'
 #' @references ensembleBMA::verifRankHist
 #'

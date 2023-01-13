@@ -28,10 +28,12 @@ set.seed(100)
 
 dt<-1
 dj<-1/8
+flag.wav <- switch(1, "wmtsa", "WaveletComp")
+
 n <- 100
 x <- rnorm(n)
 x.wave <- t(WaveletComp::WaveletTransform(x=x)$Wave)
-rec <- fun_icwt(x.wave)
+rec <- fun_icwt(x.wave, dt, dj, flag.wav)
 
 x.wt <- WaveletComp::analyze.wavelet(data.frame(x=x),"x",dt=dt,dj=dj)
 rec_orig <- WaveletComp::reconstruct(x.wt,only.sig = FALSE, plot.rec = FALSE)$series$x.r

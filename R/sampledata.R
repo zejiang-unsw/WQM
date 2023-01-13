@@ -12,5 +12,5 @@ NULL
 #'@docType data
 #'@keywords datasets
 #'@name NWP.rain
-#'@usage data(NWP.rain.h)
+#'@usage data(NWP.rain)
 NULL

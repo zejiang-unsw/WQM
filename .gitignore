@@ -49,6 +49,7 @@ po/*~
 rsconnect/
 tests/
 inst/dump/
+inst/code/
 MWR2022/
 data-raw/
 *.Rproj

@@ -20,15 +20,19 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)
 Imports: 
     MBC,
     wmtsa,
     WaveletComp,
     matrixStats,
+    data.table, 
+    dplyr, tidyr, ggplot2, 
     splus2R (>= 1.2-0), 
     ifultools (>= 2.0-0)
 Suggests: 
+    stats,
+    graphics,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3

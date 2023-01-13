@@ -10,6 +10,8 @@ RankHist(forecasts, observations, do.plot = FALSE)
 \item{forecasts}{A matrix of ensemble forecasts, in which the rows corresponds to locations and times and the columns correspond to the individual ensemble members.}
 
 \item{observations}{A vector of observations corresponding to the locations and times of the forecasts.}
+
+\item{do.plot}{Logical value of plot.}
 }
 \value{
 A vector giving the rank of verifying observations relative to the corresponding ensemble forecasts. The verification rank historgram is plotted.

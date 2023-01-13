@@ -13,6 +13,11 @@
 #' @param do.plot Logical value for ploting.
 #' @param ... Additional arguments for QDM.
 #'
+#' @importFrom graphics abline axis hist legend lines par
+#' @importFrom stats fft rnorm
+#' @import MBC
+#' @import ggplot2
+#'
 #' @return a list of post-processed data
 #' @export
 #'
@@ -95,7 +100,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
 
     ###================================###===================================###
     ## QM ----
-    if(QM %like% "MBC"){ # MBCr or MBCp
+    if((QM=="MBCp") | (QM=="MBCr") | (QM=="MBCn")){
       modulus.tmp <- do.call(QM,list(o.c=modulus.o, m.c=modulus.m, m.p=modulus.p,
                                      ratio.seq=rep(TRUE, ncol(modulus.m)), silent=TRUE))
       modulus.bcc <- modulus.tmp$mhat.c
@@ -106,7 +111,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
       modulus.bcf <- modulus.tmp$mhat.p
     } else if(QM=="QDM") {
       modulus.tmp <- lapply(1:ncol(modulus.o), function(i)
-        QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,...))
+        MBC::QDM(o.c=modulus.o[,i], m.c=modulus.m[,i], m.p=modulus.p[,i],ratio=TRUE,...))
       modulus.bcc <- sapply(modulus.tmp, function(ls) ls$mhat.c)
       modulus.bcf <- sapply(modulus.tmp, function(ls) ls$mhat.p)
     }
@@ -118,7 +123,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
       df.modulus <- rbind(data.frame(mod="obs",no=subset,x=modulus.o),
                           data.frame(mod="cal",no=subset,x=modulus.m),
                           data.frame(mod="bcc",no=subset,x=modulus.bcc)) %>%
-        gather(lev, amp, 3:11) #%>% mutate(amp=as.numeric(amp), subset=as.numeric(subset))
+        tidyr::gather(lev, amp, 3:11) #%>% mutate(amp=as.numeric(amp), subset=as.numeric(subset))
 
       df.modulus$lev <- factor(df.modulus$lev, levels = paste0("x.",1:ncol(modulus.o)))
       p.c <- ggplot(df.modulus, aes(x=no, y=amp, color=mod)) +
@@ -136,7 +141,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
 
       df.modulus <- rbind(data.frame(mod="val",no=1:nrow(modulus.p),x=modulus.p),
                           data.frame(mod="bcf",no=1:nrow(modulus.p),x=modulus.bcf)) %>%
-        gather(lev, amp, 3:11) #%>% mutate(amp=as.numeric(amp), subset=as.numeric(subset))
+        tidyr::gather(lev, amp, 3:11) #%>% mutate(amp=as.numeric(amp), subset=as.numeric(subset))
 
       df.modulus$lev <- factor(df.modulus$lev, levels = paste0("x.",1:ncol(modulus.o)))
       p.f <- ggplot(df.modulus, aes(x=no, y=amp, color=mod)) +
@@ -156,7 +161,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     ###================================###===================================###
     ## bcc----
     mat_new_cal <- matrix(complex(modulus=modulus.bcc,argument=phases.m),ncol=ncol(phases.m))
-    rec_cal <- fun_icwt(x=mat_new_cal,dt=dt,dj=dj, flag.wav, scale)
+    rec_cal <- fun_icwt(x.wave=mat_new_cal,dt=dt,dj=dj, flag.wav, scale)
     if(variable=="prep") rec_cal[rec_cal<=theta] <- 0
 
     if(PR.cal) {
@@ -164,7 +169,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
       #mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
       mat_cal_r <- prsim(modulus.bcc, phases.m, noise_mat_cal)
 
-      data_sim_cal <- sapply(1:number_sim, function(r) fun_icwt(x=mat_cal_r[[r]], dt=dt, dj=dj, flag.wav, scale))
+      data_sim_cal <- sapply(1:number_sim, function(r) fun_icwt(x.wave=mat_cal_r[[r]], dt=dt, dj=dj, flag.wav, scale))
       if(variable=="prep") data_sim_cal[data_sim_cal<=theta] <- 0
       colnames(data_sim_cal) <- paste0("r",seq(1:number_sim))
     } else{
@@ -177,14 +182,14 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     ###================================###===================================###
     ## bcf----
     mat_new_val <- matrix(complex(modulus=modulus.bcf,argument=phases.p),ncol=ncol(phases.p))
-    rec_val <- fun_icwt(x=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
+    rec_val <- fun_icwt(x.wave=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
     if(variable=="prep") rec_val[rec_val<=theta] <- 0
 
 	  ### apply wavelet reconstruction to randomized signal
     #mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
     mat_val_r <- prsim(modulus.bcf, phases.p, noise_mat_val)
 
-	  data_sim_val <- sapply(1:number_sim, function(r) fun_icwt(x=mat_val_r[[r]], dt=dt, dj=dj, flag.wav, scale))
+	  data_sim_val <- sapply(1:number_sim, function(r) fun_icwt(x.wave=mat_val_r[[r]], dt=dt, dj=dj, flag.wav, scale))
 	  if(variable=="prep") data_sim_val[data_sim_val<=theta] <- 0
     colnames(data_sim_val) <- paste0("r",seq(1:number_sim))
 
