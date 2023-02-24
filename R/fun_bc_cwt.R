@@ -23,6 +23,7 @@
 #'
 bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
                    number_sim=5, wavelet="morlet", dt=1, dj=1,
+                   method="M2", block=3, seed=NULL,
                    PR.cal=FALSE, do.plot=FALSE,...)
   {
 
@@ -32,7 +33,11 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
   ###=================================###====================================###
   ## white noise ----
   # generation of white noise for random phases generation
+  #cmat <- cor(sapply(data, function(ls) ls$obs[subset]))
+  #cat(cmat)
+
   noise_mat_cal <- list()
+  #ts_wn_mat <- faux::rnorm_multi(length(data[[1]]$obs[subset]), length(data), mu=0, sd=1, r=cmat)
   for (r in 1:number_sim) {
     ts_wn <- rnorm(n=length(data[[1]]$obs[subset]), mean = 0, sd = 1)
     #data.obs <- as.vector(sapply(data, function(ls)ls$obs[subset]))
@@ -48,6 +53,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
   }
 
   noise_mat_val <- list()
+  #ts_wn_mat <- faux::rnorm_multi(length(data[[1]]$obs[-subset]), length(data), mu=0, sd=1, r=cmat)
   for (r in 1:number_sim) {
     ts_wn <- rnorm(n=length(data[[1]]$obs[-subset]), mean = 0, sd = 1)
     #data.obs <- as.vector(sapply(data, function(ls)ls$obs[subset]))
@@ -165,9 +171,9 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     if(variable=="prep") rec_cal[rec_cal<=theta] <- 0
 
     if(PR.cal) {
-      ### apply wavelet reconstruction to randomized signal
+      ### apply wavelet reconstruction to randomized signal----
       #mat_cal_r <- lapply(1:number_sim, function(r) prsim(modulus.bcc, phases.m, noise_mat_cal[[r]]))
-      mat_cal_r <- prsim(modulus.bcc, phases.m, noise_mat_cal)
+      mat_cal_r <- prsim(modulus.bcc, phases.m, noise_mat_cal, method=method, size=block, seed=seed)
 
       data_sim_cal <- sapply(1:number_sim, function(r) fun_icwt(x.wave=mat_cal_r[[r]], dt=dt, dj=dj, flag.wav, scale))
       if(variable=="prep") data_sim_cal[data_sim_cal<=theta] <- 0
@@ -185,9 +191,9 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     rec_val <- fun_icwt(x.wave=mat_new_val,dt=dt,dj=dj, flag.wav, scale)
     if(variable=="prep") rec_val[rec_val<=theta] <- 0
 
-	  ### apply wavelet reconstruction to randomized signal
+	  ### apply wavelet reconstruction to randomized signal----
     #mat_val_r <- lapply(1:number_sim, function(r) prsim(modulus.bcf, phases.p, noise_mat_val[[r]]))
-    mat_val_r <- prsim(modulus.bcf, phases.p, noise_mat_val)
+    mat_val_r <- prsim(modulus.bcf, phases.p, noise_mat_val, method=method, size=block, seed=seed)
 
 	  data_sim_val <- sapply(1:number_sim, function(r) fun_icwt(x.wave=mat_val_r[[r]], dt=dt, dj=dj, flag.wav, scale))
 	  if(variable=="prep") data_sim_val[data_sim_val<=theta] <- 0

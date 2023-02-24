@@ -68,7 +68,7 @@ ShuffleBlocks <- function(v, size) {
 
   mat <- matrix(v, nrow = size)
   #out <- as.vector(apply(mat, 2, sample)) # random sample within block
-  out <- as.vector(apply(mat, 2, function(x) guyrot(x,sample(1:size,1)))) #rotate within block
+  out <- as.vector(apply(mat, 2, function(x) guyrot(x,sample(0:size,1)))) #rotate within block
   #out <- as.vector(mat[, sample(ncol(mat))]) # block shuffle
   #print(out)
   return(out)

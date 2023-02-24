@@ -1,7 +1,7 @@
 Package: WQM
 Type: Package
 Title: Wavelet-based Quantile Mapping for Postprocessing Numerical Weather Predictions
-Version: 0.1.2.9000
+Version: 0.1.3
 Authors@R: 
     c(person(given = "Ze",
            family = "Jiang",

@@ -14,6 +14,9 @@ bc_cwt(
   wavelet = "morlet",
   dt = 1,
   dj = 1,
+  method = "M2",
+  block = 3,
+  seed = NULL,
   PR.cal = FALSE,
   do.plot = FALSE,
   ...
