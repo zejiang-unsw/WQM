@@ -9,6 +9,9 @@
 #' @param wavelet a character string denoting the wavelet filter to use in calculating the CWT.
 #' @param dt sampling resolution in the time domain.
 #' @param dj sampling resolution in the frequency domain.
+#' @param method Shuffling method, M1: non-shuffling and M2: shuffling. M2 by default.
+#' @param block Block size.
+#' @param seed Seed for shuffling process.
 #' @param PR.cal Logical value for phase randomization of calibration.
 #' @param do.plot Logical value for ploting.
 #' @param ... Additional arguments for QDM.

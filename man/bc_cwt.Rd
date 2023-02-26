@@ -41,6 +41,12 @@ bc_cwt(
 
 \item{dj}{sampling resolution in the frequency domain.}
 
+\item{method}{Shuffling method, M1: non-shuffling and M2: shuffling. M2 by default.}
+
+\item{block}{Block size.}
+
+\item{seed}{Seed for shuffling process.}
+
 \item{PR.cal}{Logical value for phase randomization of calibration.}
 
 \item{do.plot}{Logical value for ploting.}
