@@ -51,7 +51,6 @@ tests/
 inst/dump/
 inst/code/
 MWR2022/
-data-raw/
 *.Rproj
-.DS_Store
-MWR2022.zip
+inst/doc
+vignettes/
