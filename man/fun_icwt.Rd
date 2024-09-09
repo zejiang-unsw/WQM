@@ -4,7 +4,7 @@
 \alias{fun_icwt}
 \title{Inverse of continuous wavelet transform}
 \usage{
-fun_icwt(x.wave, dt, dj, flag.wav = c("wmtsa", "WaveletComp"), scale = NULL)
+fun_icwt(x.wave, dt, dj, flag.wav = "WaveletComp", scale = NULL)
 }
 \arguments{
 \item{x.wave}{input complex matrix.}
@@ -28,7 +28,7 @@ set.seed(100)
 
 dt<-1
 dj<-1/8
-flag.wav <- switch(1, "wmtsa", "WaveletComp")
+flag.wav <- switch(2, "wmtsa", "WaveletComp")
 
 n <- 100
 x <- rnorm(n)

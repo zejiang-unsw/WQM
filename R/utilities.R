@@ -16,7 +16,7 @@
 #'
 #' dt<-1
 #' dj<-1/8
-#' flag.wav <- switch(1, "wmtsa", "WaveletComp")
+#' flag.wav <- switch(2, "wmtsa", "WaveletComp")
 #'
 #' n <- 100
 #' x <- rnorm(n)
@@ -35,7 +35,7 @@
 #'        lwd=c(5,3,1),bg="transparent",bty = "n",
 #'        col=c("black","red","blue"),horiz=TRUE)
 #' par(op)
-fun_icwt<-function(x.wave, dt, dj, flag.wav=c("wmtsa","WaveletComp"), scale=NULL){
+fun_icwt<-function(x.wave, dt, dj, flag.wav="WaveletComp", scale=NULL){
 
   dt <- 1
   dj <- 1/4

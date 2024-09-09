@@ -30,7 +30,7 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
                    PR.cal=FALSE, do.plot=FALSE,...)
   {
 
-  flag.wav <- switch(1, "wmtsa", "WaveletComp")
+  flag.wav <- switch(2, "wmtsa", "WaveletComp")
   if(flag.wav=="wmtsa") J <- fun_cwt_J(length(data[[1]]$obs[-subset]), dt, dj) + 1
 
   ###=================================###====================================###
@@ -49,7 +49,11 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     if(flag.wav=="WaveletComp"){
       wt_noise <- t(WaveletComp::WaveletTransform(x=ts_wn,dt=dt,dj=dj)$Wave)
     } else if(flag.wav=="wmtsa"){
-      wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+      if(requireNamespace("wmtsa", quietly = TRUE)) {
+        wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+      } else {
+        message("Package 'wmtsa' is not installed. Please install it manually to enable wavelet functionality.")
+      }
     }
 
     noise_mat_cal[[r]] <- as.matrix(wt_noise)
@@ -65,7 +69,11 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     if(flag.wav=="WaveletComp"){
       wt_noise <- t(WaveletComp::WaveletTransform(x=ts_wn,dt=dt,dj=dj)$Wave)
     } else if(flag.wav=="wmtsa"){
-      wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+      if(requireNamespace("wmtsa", quietly = TRUE)) {
+        wt_noise <- wmtsa::wavCWT(x=ts_wn,wavelet=wavelet,n.scale=J)
+      } else {
+        message("Package 'wmtsa' is not installed. Please install it manually to enable wavelet functionality.")
+      }
     }
 
     noise_mat_val[[r]] <- as.matrix(wt_noise)
@@ -80,10 +88,13 @@ bc_cwt <- function(data, subset, variable, theta=0.1, QM=c("MBC","MRS","QDM"),
     ## cwt decomposition ----
     # use continuous wavelet transform (CWT) to wavelet transform the data
     if(flag.wav=="wmtsa"){
-      wt_o <- wmtsa::wavCWT(x=data[[l]]$obs[subset],wavelet=wavelet,n.scale=J)
-      wt_m <- wmtsa::wavCWT(x=data[[l]]$mod[subset],wavelet=wavelet,n.scale=J)
-      wt_p <- wmtsa::wavCWT(x=data[[l]]$mod[-subset],wavelet=wavelet,n.scale=J)
-
+      if(requireNamespace("wmtsa", quietly = TRUE)) {
+        wt_o <- wmtsa::wavCWT(x=data[[l]]$obs[subset],wavelet=wavelet,n.scale=J)
+        wt_m <- wmtsa::wavCWT(x=data[[l]]$mod[subset],wavelet=wavelet,n.scale=J)
+        wt_p <- wmtsa::wavCWT(x=data[[l]]$mod[-subset],wavelet=wavelet,n.scale=J)
+      } else {
+        message("Package 'wmtsa' is not installed. Please install it manually to enable wavelet functionality.")
+      }
       scale <- attr(wt_o,'scale')
     } else if(flag.wav=="WaveletComp"){
       wt_o <- t(WaveletComp::WaveletTransform(x=data[[l]]$obs[subset],dt=dt,dj=dj)$Wave)

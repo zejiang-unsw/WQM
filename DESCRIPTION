@@ -1,7 +1,7 @@
 Package: WQM
 Type: Package
-Title: Wavelet-based Quantile Mapping for Postprocessing Numerical Weather Predictions
-Version: 0.1.3.9000
+Title: Wavelet-Based Quantile Mapping for Postprocessing Numerical Weather Predictions
+Version: 0.1.4
 Authors@R: 
     c(person(given = "Ze",
            family = "Jiang",
@@ -15,7 +15,7 @@ Authors@R:
 Author: Ze Jiang [aut, cre] (<https://orcid.org/0000-0002-3472-0829>),
         Fiona Johnson [aut] (<https://orcid.org/0000-0001-5708-1807>)
 Maintainer: Ze Jiang <ze.jiang@unsw.edu.au>
-Description: A wavelet-based quantile mapping post-processing method (WQM). It can correct the bias in spatio-temporal precipitation forecast at multiple time scales, and generate an ensemble of precipitation forecasts. 
+Description: This software package implements a wavelet-based quantile mapping (WQM) technique designed to correct biases in spatio-temporal precipitation forecasts across multiple time scales. The WQM method effectively enhances forecast accuracy by generating an ensemble of precipitation forecasts that account for uncertainties in the prediction process. For a comprehensive overview of the methodologies employed in this package, please refer to Jiang, Z., and Johnson, F. (2023) <doi:10.1029/2022EF003350>.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -23,19 +23,21 @@ Depends:
     R (>= 3.5.0)
 Imports: 
     MBC,
-    wmtsa,
     WaveletComp,
     matrixStats,
-    data.table, 
-    dplyr, tidyr, ggplot2, 
-    splus2R (>= 1.2-0), 
-    ifultools (>= 2.0-0)
+    ggplot2
 Suggests: 
     stats,
+    tidyr, 
+    dplyr, 
+    wmtsa, 
+    scales,
+    data.table, 
     graphics,
     testthat (>= 3.0.0),
     knitr,
-    rmarkdown
+    rmarkdown, 
+    bookdown
 Config/testthat/edition: 3
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
