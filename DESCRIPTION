@@ -15,7 +15,7 @@ Authors@R:
 Author: Ze Jiang [aut, cre] (<https://orcid.org/0000-0002-3472-0829>),
         Fiona Johnson [aut] (<https://orcid.org/0000-0001-5708-1807>)
 Maintainer: Ze Jiang <ze.jiang@unsw.edu.au>
-Description: This software package implements a wavelet-based quantile mapping (WQM) technique designed to correct biases in spatio-temporal precipitation forecasts across multiple time scales. The WQM method effectively enhances forecast accuracy by generating an ensemble of precipitation forecasts that account for uncertainties in the prediction process. For a comprehensive overview of the methodologies employed in this package, please refer to Jiang, Z., and Johnson, F. (2023) <doi:10.1029/2022EF003350>.
+Description: The wavelet-based quantile mapping (WQM) technique is designed to correct biases in spatio-temporal precipitation forecasts across multiple time scales. The WQM method effectively enhances forecast accuracy by generating an ensemble of precipitation forecasts that account for uncertainties in the prediction process. For a comprehensive overview of the methodologies employed in this package, please refer to Jiang, Z., and Johnson, F. (2023) <doi:10.1029/2022EF003350>. The package relies on two packages for continuous wavelet transforms: 'WaveletComp', which can be installed automatically, and 'wmtsa', which is optional and available from the CRAN archive <https://cran.r-project.org/src/contrib/Archive/wmtsa/>. Users need to manually install 'wmtsa' from this archive if they prefer to use 'wmtsa' based decomposition.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

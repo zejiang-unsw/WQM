@@ -132,14 +132,17 @@ fun_ifft<-function(x, do.plot=FALSE){
 
   if(do.plot){
     ### compare to original series
-    op <- par(mfrow = c(1, 1), mar=c(3,3,1,1), mgp=c(1, 0.5, 0))
+	oldpar <- par(no.readonly = TRUE) 
+	on.exit(par(oldpar)) 
+
+    par(mfrow = c(1, 1), mar=c(3,3,1,1), mgp=c(1, 0.5, 0))
     plot(1:n, ts_inv,type="l", lwd=5, xlab=NA, ylab=NA)
     lines(1:n, ts_inv_new,col="red",lwd=3)
     lines(1:n, x,col="blue", lwd=1)
     legend("topright",legend=c("Inverse","Inverse_new", "Raw"),
            lwd=c(5,3,1),bg="transparent",bty = "n",
            col=c("black","red","blue"),horiz=TRUE)
-    par(op)
+
   }
 
   return(ts_inv_new)

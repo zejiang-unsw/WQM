@@ -12,7 +12,7 @@
 #'
 prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2], size=3, seed=NULL){
 
-    if(!is.null(seed)) set.seed(seed)
+    if(!is.null(seed)) set.seed(seed) # set a different seed 
 
     ###===============================###===============================###
     ### use the noise matrix corresponding to this run
@@ -41,7 +41,7 @@ prsim <- function(modulus, phases, noise_mat, method=c("M1","M2")[2], size=3, se
 
     }
 
-    if(!is.null(seed)) rm(.Random.seed, envir=.GlobalEnv)
+    #if(!is.null(seed)) rm(.Random.seed, envir=.GlobalEnv)
 
     return(mat_new)
 }
